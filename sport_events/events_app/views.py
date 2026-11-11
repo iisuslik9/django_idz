@@ -10,7 +10,7 @@ from .models import Event, Registration, EventResult
 
 def home(request):
     events = Event.objects.all()
-    return render(request, "events/home.html", {"events": events})
+    return render(request, "home.html", {"events": events})
 
 
 def event_detail(request, event_id):
