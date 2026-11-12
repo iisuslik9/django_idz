@@ -4,7 +4,7 @@
 {% block content %}
 
 {% if not user.is_authenticated %}
-    <!-- Приветственный баннер для гостей -->
+
     <div class="hero">
         <h1>Единая платформа спортивных мероприятий</h1>
         <p>Находите марафоны, турниры и соревнования в вашем городе. Регистрируйтесь в один клик, отслеживайте расписание и следите за своими результатами.</p>
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <!-- Блок возможностей -->
+
     <div class="features-grid">
         <div class="feature-card">
             <h3>🏃 Для участников</h3>
@@ -28,7 +28,31 @@
     </div>
 {% endif %}
 
-<h2>Ближайшие спортивные мероприятия</h2>
+<h2>спортивные мероприятия</h2>
+
+<form method="get" class="card" style="display: flex; gap: 10px; flex-wrap: wrap; align-items: end;">
+    <div>
+        <label>Дата:</label><br>
+        <input type="date" name="date" value="{{ selected_date }}">
+    </div>
+    <div>
+        <label>Место проведения:</label><br>
+        <input type="text" name="location" placeholder="Город или стадион" value="{{ selected_location }}">
+    </div>
+    <div>
+        <label>Тип мероприятия:</label><br>
+        <select name="event_type">
+            <option value="">Все типы</option>
+            {% for code, name in event_types %}
+                <option value="{{ code }}" {% if selected_type == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="btn">Найти</button>
+    <a href="{% url 'home' %}" class="btn btn-danger">Сбросить</a>
+</form>
+
+
 
 {% if events %}
     <div class="events-grid">

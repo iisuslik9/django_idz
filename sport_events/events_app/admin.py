@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 from django.contrib import admin
-from .models import Organizer, Participant, Event, Registration, EventResult
+from .models import Organizer, Participant, Event, Registration, EventResult, Feedback
 
 
 @admin.register(Organizer)
@@ -30,3 +30,9 @@ class RegistrationAdmin(admin.ModelAdmin):
 @admin.register(EventResult)
 class EventResultAdmin(admin.ModelAdmin):
     list_display = ("registration", "place", "finish_time", "score")
+
+@admin.register(Feedback)
+class FeedbackAdmin(admin.ModelAdmin):
+    list_display = ("author_name", "event", "email", "created_at")
+    list_filter = ("event",)
+

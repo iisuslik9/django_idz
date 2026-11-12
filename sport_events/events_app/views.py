@@ -4,13 +4,36 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from accounts_app.models import User
-from .forms import EventForm, EventResultForm
-from .models import Event, Registration, EventResult
-
+from django.conf import settings
+from django.core.mail import send_mail
+from .forms import EventForm, EventResultForm, EventRegistrationForm, FeedbackForm
+from .models import Event, Registration, EventResult, Feedback
 
 def home(request):
     events = Event.objects.all()
-    return render(request, "events_app/home.html", {"events": events})
+    # Фильтрация по дате, месту проведения и типу мероприятия
+    date_query = request.GET.get("date")
+    location_query = request.GET.get("location")
+    type_query = request.GET.get("event_type")
+
+    if date_query:
+        events = events.filter(date__date=date_query)
+    if location_query:
+        events = events.filter(location__icontains=location_query)
+    if type_query:
+        events = events.filter(event_type=type_query)
+
+    return render(
+        request,
+        "events_app/home.html",
+        {
+            "events": events,
+            "event_types": Event.EventType.choices,
+            "selected_date": date_query or "",
+            "selected_location": location_query or "",
+            "selected_type": type_query or "",
+        },
+    )
 
 
 def event_detail(request, event_id):
@@ -178,3 +201,14 @@ def add_or_edit_result(request, registration_id):
         },
     )
 
+def feedback_view(request):
+    if request.method == "POST":
+        form = FeedbackForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Спасибо! Ваш отзыв успешно отправлен.")
+            return redirect("home")
+    else:
+        form = FeedbackForm()
+
+    return render(request, "events_app/feedback.html", {"form": form})

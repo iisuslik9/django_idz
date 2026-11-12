@@ -1,5 +1,5 @@
 from django import forms
-from .models import Event, EventResult
+from .models import Event, EventResult, Registration, Feedback
 
 
 class EventForm(forms.ModelForm):

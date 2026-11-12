@@ -2,6 +2,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render, redirect
+from .forms import ProfileEditForm
 
 from .forms import (
     ParticipantRegistrationForm,
@@ -77,3 +78,15 @@ def profile(request):
         "accounts_app/profile.html",
         {"profile": request.user},
     )
+
+@login_required
+def edit_profile(request):
+    if request.method == "POST":
+        form = ProfileEditForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("profile")
+    else:
+        form = ProfileEditForm(instance=request.user)
+
+    return render(request, "users/edit_profile.html", {"form": form})
