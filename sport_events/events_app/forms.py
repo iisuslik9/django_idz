@@ -5,7 +5,7 @@ from .models import Event, EventResult, Registration, Feedback
 class EventForm(forms.ModelForm):
     class Meta:
         model = Event
-        fields = ("title", "description", "date", "location")
+        fields = ("title", "event_type", "description", "date", "location")
         widgets = {
             "date": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
