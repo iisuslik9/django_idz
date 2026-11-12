@@ -86,3 +86,28 @@ class OrganizerRegistrationForm(UserCreationForm):
             user.save()
 
         return user
+
+class ProfileEditForm(forms.ModelForm):
+    full_name = forms.CharField(max_length=200, label="ФИО / Название организации")
+
+    class Meta:
+        model = User
+        fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.role == User.Role.PARTICIPANT and self.instance.participant:
+            self.fields["full_name"].initial = self.instance.participant.full_name
+        elif self.instance.role == User.Role.ORGANIZER and self.instance.organizer:
+            self.fields["full_name"].initial = self.instance.organizer.full_name
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        full_name = self.cleaned_data["full_name"]
+        if user.role == User.Role.PARTICIPANT and user.participant:
+            user.participant.full_name = full_name
+            user.participant.save()
+        elif user.role == User.Role.ORGANIZER and user.organizer:
+            user.organizer.full_name = full_name
+            user.organizer.save()
+        return user
