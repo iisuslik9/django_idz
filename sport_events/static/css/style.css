@@ -10,9 +10,71 @@ table { width: 100%; border-collapse: collapse; margin-top: 15px; }
 th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
 th { background: #f1f5f9; }
 
+.login-layout {
+    min-height: calc(100vh - 220px);
+    display: grid;
+    place-items: center;
+    padding: 24px 0;
+}
+
+.login-panel {
+    width: min(100%, 400px);
+    padding: 30px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    box-shadow: 0 12px 30px rgba(30, 41, 59, 0.1);
+}
+
+.login-panel h2 {
+    margin: 0 0 24px;
+    text-align: center;
+}
+
+.login-panel form p {
+    margin: 0 0 18px;
+}
+
+.login-panel label {
+    display: block;
+    margin-bottom: 7px;
+    font-weight: 600;
+}
+
+.login-panel input {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    font: inherit;
+}
+
+.login-panel input:focus {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
+.login-panel .btn {
+    width: 100%;
+    padding: 11px 16px;
+}
+
+@media (max-width: 600px) {
+    .login-layout {
+        min-height: calc(100vh - 190px);
+    }
+
+    .login-panel {
+        padding: 24px 20px;
+    }
+}
+
 /* Приветственный блок (Hero) */
 .hero {
-    background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%);
+    /* background: linear-gradient(135deg, #1e293b 0%, #2563eb 100%); */
+    background: linear-gradient(rgba(30, 41, 59, 0.72), rgba(37, 99, 235, 0.78)),
+                url("../images/hero-bg.jpg") center/cover no-repeat;
     color: #fff;
     padding: 50px 30px;
     border-radius: 12px;
