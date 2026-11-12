@@ -18,7 +18,7 @@
 
     <div class="features-grid">
         <div class="feature-card">
-            <h3>🏃 Для участников</h3>
+            <h3>🏋️ Для участников</h3>
             <p>Выбирайте интересные старты, управляйте своими заявками в личном кабинете и сохраняйте историю всех финишей, мест и баллов.</p>
         </div>
         <div class="feature-card">
@@ -37,7 +37,7 @@
     </div>
     <div>
         <label>Место проведения:</label><br>
-        <input type="text" name="location" placeholder="Город или стадион" value="{{ selected_location }}">
+        <input type="text" name="location" placeholder="Площадка" value="{{ selected_location }}">
     </div>
     <div>
         <label>Тип мероприятия:</label><br>
@@ -49,7 +49,7 @@
         </select>
     </div>
     <button type="submit" class="btn">Найти</button>
-    <a href="{% url 'home' %}" class="btn btn-danger">Сбросить</a>
+    <a href="{% url 'home' %}" class="btn">Сбросить</a>
 </form>
 
 

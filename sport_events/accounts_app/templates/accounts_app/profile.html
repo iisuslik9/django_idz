@@ -9,9 +9,12 @@
     <p><strong>ФИО:</strong> {{ profile.participant.full_name }}</p>
     <p><strong>Город:</strong> {{ profile.participant.city|default:"Не указан" }}</p>
     <a href="{% url 'participant_cabinet' %}" class="btn">Перейти в кабинет участника</a>
+    <a href="{% url 'edit_profile' %}" class="btn">Редактировать профиль</a>
 {% elif profile.role == 'organizer' and profile.organizer %}
     <p><strong>Организация / ФИО:</strong> {{ profile.organizer.full_name }}</p>
     <p><strong>Телефон:</strong> {{ profile.organizer.phone|default:"Не указан" }}</p>
     <a href="{% url 'organizer_cabinet' %}" class="btn">Перейти в кабинет организатора</a>
+    <a href="{% url 'edit_profile' %}" class="btn">Редактировать профиль</a>
+
 {% endif %}
 {% endblock %}

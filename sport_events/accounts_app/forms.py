@@ -87,8 +87,14 @@ class OrganizerRegistrationForm(UserCreationForm):
 
         return user
 
-class ProfileEditForm(forms.ModelForm):
-    full_name = forms.CharField(max_length=200, label="ФИО / Название организации")
+class ParticipantProfileEditForm(forms.ModelForm):
+    full_name = forms.CharField(max_length=200, label="ФИО участника")
+    birth_date = forms.DateField(
+        required=False,
+        label="Дата рождения",
+        widget=forms.DateInput(attrs={"type": "date"}),
+    )
+    city = forms.CharField(max_length=100, required=False, label="Город")
 
     class Meta:
         model = User
@@ -96,18 +102,41 @@ class ProfileEditForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if self.instance.role == User.Role.PARTICIPANT and self.instance.participant:
+        if self.instance.participant:
             self.fields["full_name"].initial = self.instance.participant.full_name
-        elif self.instance.role == User.Role.ORGANIZER and self.instance.organizer:
-            self.fields["full_name"].initial = self.instance.organizer.full_name
+            self.fields["birth_date"].initial = self.instance.participant.birth_date
+            self.fields["city"].initial = self.instance.participant.city
 
     def save(self, commit=True):
         user = super().save(commit=commit)
-        full_name = self.cleaned_data["full_name"]
-        if user.role == User.Role.PARTICIPANT and user.participant:
-            user.participant.full_name = full_name
-            user.participant.save()
-        elif user.role == User.Role.ORGANIZER and user.organizer:
-            user.organizer.full_name = full_name
-            user.organizer.save()
+        if user.participant:
+            user.participant.full_name = self.cleaned_data["full_name"]
+            user.participant.birth_date = self.cleaned_data.get("birth_date")
+            user.participant.city = self.cleaned_data.get("city", "")
+            if commit:
+                user.participant.save()
+        return user
+
+
+class OrganizerProfileEditForm(forms.ModelForm):
+    full_name = forms.CharField(max_length=200, label="ФИО / Название организации")
+    phone = forms.CharField(max_length=20, required=False, label="Контактный телефон")
+
+    class Meta:
+        model = User
+        fields = ("username", "email")
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance.organizer:
+            self.fields["full_name"].initial = self.instance.organizer.full_name
+            self.fields["phone"].initial = self.instance.organizer.phone
+
+    def save(self, commit=True):
+        user = super().save(commit=commit)
+        if user.organizer:
+            user.organizer.full_name = self.cleaned_data["full_name"]
+            user.organizer.phone = self.cleaned_data.get("phone", "")
+            if commit:
+                user.organizer.save()
         return user

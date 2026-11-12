@@ -2,11 +2,13 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.shortcuts import render, redirect
-from .forms import ProfileEditForm
+
 
 from .forms import (
     ParticipantRegistrationForm,
     OrganizerRegistrationForm,
+    ParticipantProfileEditForm,
+    OrganizerProfileEditForm,
 )
 from .models import User
 
@@ -81,12 +83,18 @@ def profile(request):
 
 @login_required
 def edit_profile(request):
+    # Выбираем класс формы в зависимости от роли пользователя
+    if request.user.role == User.Role.ORGANIZER:
+        form_class = OrganizerProfileEditForm
+    else:
+        form_class = ParticipantProfileEditForm
+
     if request.method == "POST":
-        form = ProfileEditForm(request.POST, instance=request.user)
+        form = form_class(request.POST, instance=request.user)
         if form.is_valid():
             form.save()
             return redirect("profile")
     else:
-        form = ProfileEditForm(instance=request.user)
+        form = form_class(instance=request.user)
 
-    return render(request, "users/edit_profile.html", {"form": form})
+    return render(request, "accounts_app/edit_profile.html", {"form": form})

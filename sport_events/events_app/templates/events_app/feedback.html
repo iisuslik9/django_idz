@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Обратная связь — СпортПлатформа{% endblock %}
+
+{% block content %}
+<h2>Обратная связь и отзывы о мероприятиях</h2>
+<p>Поделитесь своими впечатлениями о прошедшем соревновании или оставьте пожелания для организаторов.</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Отправить отзыв</button>
+    <a href="{% url 'home' %}" class="btn btn-danger">На главную</a>
+</form>
+{% endblock %}

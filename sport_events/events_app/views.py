@@ -46,34 +46,96 @@ def event_detail(request, event_id):
             event=event,
         ).first()
 
+    if request.method == "POST":
+        feedback_form = FeedbackForm(request.POST)
+        if feedback_form.is_valid():
+            feedback = feedback_form.save(commit=False)
+            feedback.event = event  # привязываем к текущему мероприятию
+            feedback.save()
+            messages.success(request, "Ваш отзыв добавлен")
+            return redirect("event_detail", event_id=event.id)
+    else:
+        initial_data = {}
+        if request.user.is_authenticated:
+            initial_data["email"] = request.user.email
+            if request.user.role == User.Role.PARTICIPANT and request.user.participant:
+                initial_data["author_name"] = request.user.participant.full_name
+        feedback_form = FeedbackForm(initial=initial_data)
+
+    feedbacks = event.feedbacks.all().order_by("-created_at")
+
     return render(
         request,
         "events_app/event_details.html",
         {
             "event": event,
             "user_registration": user_registration,
+            "feedback_form": feedback_form,
+            "feedbacks": feedbacks,
         },
     )
 
 
+# @login_required
+# def register_for_event(request, event_id):
+#     if request.user.role != User.Role.PARTICIPANT:
+#         messages.error(request, "Регистрироваться на мероприятия могут только участники")
+#         return redirect("event_detail", event_id=event_id)
+
+#     event = get_object_or_404(Event, id=event_id)
+#     registration, created = Registration.objects.get_or_create(
+#         participant=request.user.participant,
+#         event=event,
+#         defaults={"status": Registration.Status.CONFIRMED},
+#     )
+
+#     if not created and registration.status == Registration.Status.CANCELLED:
+#         registration.status = Registration.Status.CONFIRMED
+#         registration.save()
+
+#     return redirect("participant_cabinet")
 @login_required
 def register_for_event(request, event_id):
     if request.user.role != User.Role.PARTICIPANT:
-        messages.error(request, "Регистрироваться на мероприятия могут только участники.")
+        messages.error(request, "Регистрироваться на мероприятия могут только участники")
         return redirect("event_detail", event_id=event_id)
 
     event = get_object_or_404(Event, id=event_id)
-    registration, created = Registration.objects.get_or_create(
-        participant=request.user.participant,
-        event=event,
-        defaults={"status": Registration.Status.CONFIRMED},
+
+    if request.method == "POST":
+        form = EventRegistrationForm(request.POST)
+        if form.is_valid():
+            registration, created = Registration.objects.get_or_create(
+                participant=request.user.participant,
+                event=event,
+                defaults={"status": Registration.Status.CONFIRMED},
+            )
+            if not created and registration.status == Registration.Status.CANCELLED:
+                registration.status = Registration.Status.CONFIRMED
+                registration.save()
+
+            # Отправка email-уведомления о подтверждении регистрации
+            if request.user.email:
+                send_mail(
+                    subject=f"Подтверждение регистрации: {event.title}",
+                    message=(
+                        f"Здравствуйте, {request.user.participant.full_name}!\n"
+                        f"Вы успешно зарегистрированы на мероприятие «{event.title}».\n"
+                        f"Дата: {event.date.strftime('%d.%m.%Y %H:%M')}, Место: {event.location}."
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[request.user.email],
+                    fail_silently=True,
+                )
+            return redirect("participant_cabinet")
+    else:
+        form = EventRegistrationForm()
+
+    return render(
+        request,
+        "events_app/register_event.html",
+        {"form": form, "event": event},
     )
-
-    if not created and registration.status == Registration.Status.CANCELLED:
-        registration.status = Registration.Status.CONFIRMED
-        registration.save()
-
-    return redirect("participant_cabinet")
 
 
 @login_required
@@ -159,6 +221,7 @@ def manage_event(request, event_id):
 
     event = get_object_or_404(Event, id=event_id, organizer=request.user.organizer)
     registrations = event.registrations.select_related("participant", "result")
+    feedbacks = event.feedbacks.all().order_by("-created_at")
 
     return render(
         request,
@@ -166,8 +229,10 @@ def manage_event(request, event_id):
         {
             "event": event,
             "registrations": registrations,
+            "feedbacks": feedbacks,
         },
     )
+
 
 
 @login_required
@@ -188,6 +253,23 @@ def add_or_edit_result(request, registration_id):
             new_result = form.save(commit=False)
             new_result.registration = registration
             new_result.save()
+
+            # Отправка email-уведомления с результатами участнику
+            participant_user = getattr(registration.participant, "user_account", None)
+            if participant_user and participant_user.email:
+                send_mail(
+                    subject=f"Результаты мероприятия: {registration.event.title}",
+                    message=(
+                        f"Здравствуйте, {registration.participant.full_name}!\n"
+                        f"Опубликованы ваши результаты по мероприятию «{registration.event.title}»:\n"
+                        f"Место: {new_result.place or '—'}\n"
+                        f"Время: {new_result.finish_time or '—'}\n"
+                        f"Баллы: {new_result.score or '—'}"
+                    ),
+                    from_email=settings.DEFAULT_FROM_EMAIL,
+                    recipient_list=[participant_user.email],
+                    fail_silently=True,
+                )
             return redirect("manage_event", event_id=registration.event.id)
     else:
         form = EventResultForm(instance=result)
@@ -195,11 +277,9 @@ def add_or_edit_result(request, registration_id):
     return render(
         request,
         "events_app/add_result.html",
-        {
-            "form": form,
-            "registration": registration,
-        },
+        {"form": form, "registration": registration},
     )
+
 
 def feedback_view(request):
     if request.method == "POST":

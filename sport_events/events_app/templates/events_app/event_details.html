@@ -16,4 +16,29 @@
 {% elif not user.is_authenticated %}
     <p><a href="{% url 'login' %}">Войдите</a> как участник, чтобы записаться на мероприятие.</p>
 {% endif %}
+<hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+<h3>Отзывы о мероприятии ({{ feedbacks.count }})</h3>
+
+{% for fb in feedbacks %}
+    <div class="card">
+        <p style="margin: 0 0 5px;">
+            <strong>{{ fb.author_name }}</strong>
+            <span style="color: #64748b; font-size: 13px;">— {{ fb.created_at|date:"d.m.Y H:i" }}</span>
+        </p>
+        <p style="margin: 0;">{{ fb.message }}</p>
+    </div>
+{% empty %}
+    <p style="color: #64748b;">Отзывов пока нет. Будьте первым!</p>
+{% endfor %}
+
+<div class="card" style="background: #f8fafc; margin-top: 20px;">
+    <h4>Оставить отзыв</h4>
+    <form method="post">
+        {% csrf_token %}
+        {{ feedback_form.as_p }}
+        <button type="submit" class="btn">Отправить отзыв</button>
+    </form>
+</div>
+
 {% endblock %}

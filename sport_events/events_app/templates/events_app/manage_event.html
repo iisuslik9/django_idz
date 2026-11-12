@@ -35,4 +35,20 @@
     <tr><td colspan="5">Пока никто не зарегистрировался.</td></tr>
     {% endfor %}
 </table>
+<hr style="margin: 30px 0; border: 0; border-top: 1px solid #e2e8f0;">
+
+<h3>Отзывы участников о мероприятии ({{ feedbacks.count }})</h3>
+
+{% for fb in feedbacks %}
+    <div class="card">
+        <p style="margin: 0 0 5px;">
+            <strong>{{ fb.author_name }}</strong> ({{ fb.email }})
+            <span style="color: #64748b; font-size: 13px;">— {{ fb.created_at|date:"d.m.Y H:i" }}</span>
+        </p>
+        <p style="margin: 0;">{{ fb.message }}</p>
+    </div>
+{% empty %}
+    <p style="color: #64748b;">По этому мероприятию пока нет отзывов.</p>
+{% endfor %}
+
 {% endblock %}

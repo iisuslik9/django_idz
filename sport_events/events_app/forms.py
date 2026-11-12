@@ -26,4 +26,4 @@ class EventResultForm(forms.ModelForm):
 class FeedbackForm(forms.ModelForm):
     class Meta:
         model = Feedback
-        fields = ("event", "author_name", "email", "message")
+        fields = ("author_name", "email", "message")

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Регистрация на мероприятие — {{ event.title }}{% endblock %}
+
+{% block content %}
+<h2>Подтверждение регистрации</h2>
+
+<div class="card">
+    <h3>{{ event.title }}</h3>
+    <p><strong>Дата и время:</strong> {{ event.date|date:"d.m.Y в H:i" }}</p>
+    <p><strong>Место проведения:</strong> {{ event.location }}</p>
+    <p><strong>Организатор:</strong> {{ event.organizer.full_name }}</p>
+</div>
+
+<p>Вы действительно хотите зарегистрироваться на это мероприятие?</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Подтвердить участие</button>
+    <a href="{% url 'event_detail' event.id %}" class="btn btn-danger">Отмена</a>
+</form>
+{% endblock %}

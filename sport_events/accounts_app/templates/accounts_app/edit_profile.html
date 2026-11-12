@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Редактирование профиля — СпортПлатформа{% endblock %}
+
+{% block content %}
+    {% if user.role == 'organizer' %}
+        <h2>Редактирование профиля организатора</h2>
+    {% else %}
+        <h2>Редактирование профиля участника</h2>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn">Сохранить изменения</button>
+        <a href="{% url 'profile' %}" class="btn btn-danger">Отмена</a>
+    </form>
+{% endblock %}
