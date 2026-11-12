@@ -10,7 +10,7 @@ from .models import Event, Registration, EventResult
 
 def home(request):
     events = Event.objects.all()
-    return render(request, "home.html", {"events": events})
+    return render(request, "events_app/home.html", {"events": events})
 
 
 def event_detail(request, event_id):
@@ -25,7 +25,7 @@ def event_detail(request, event_id):
 
     return render(
         request,
-        "events/event_detail.html",
+        "events_app/event_details.html",
         {
             "event": event,
             "user_registration": user_registration,
@@ -90,7 +90,7 @@ def participant_cabinet(request):
 
     return render(
         request,
-        "events/participant_cabinet.html",
+        "events_app/participant_cabinet.html",
         {
             "upcoming_registrations": upcoming_registrations,
             "past_registrations": past_registrations,
@@ -106,7 +106,7 @@ def organizer_cabinet(request):
     events = Event.objects.filter(organizer=request.user.organizer)
     return render(
         request,
-        "events/organizer_cabinet.html",
+        "events_app/organizer_cabinet.html",
         {"events": events},
     )
 
@@ -126,7 +126,7 @@ def create_event(request):
     else:
         form = EventForm()
 
-    return render(request, "events/create_event.html", {"form": form})
+    return render(request, "events_app/create_event.html", {"form": form})
 
 
 @login_required
@@ -139,7 +139,7 @@ def manage_event(request, event_id):
 
     return render(
         request,
-        "events/manage_event.html",
+        "events_app/manage_event.html",
         {
             "event": event,
             "registrations": registrations,
@@ -171,7 +171,7 @@ def add_or_edit_result(request, registration_id):
 
     return render(
         request,
-        "events/add_result.html",
+        "events_app/add_result.html",
         {
             "form": form,
             "registration": registration,

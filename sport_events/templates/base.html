@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Спортивные мероприятия{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<header>
+    <div>
+        <a href="{% url 'home' %}"><strong>СпортПлатформа</strong></a>
+        {% if user.is_authenticated %}
+            {% if user.role == 'participant' %}
+                <a href="{% url 'participant_cabinet' %}">Кабинет участника</a>
+            {% elif user.role == 'organizer' %}
+                <a href="{% url 'organizer_cabinet' %}">Кабинет организатора</a>
+            {% endif %}
+            <a href="{% url 'profile' %}">Профиль ({{ user.username }})</a>
+        {% endif %}
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+            <form action="{% url 'logout' %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">Выйти</button>
+            </form>
+        {% else %}
+            <a href="{% url 'login' %}">Вход</a>
+            <a href="{% url 'register_participant' %}">Регистрация участника</a>
+            <a href="{% url 'register_organizer' %}">Регистрация организатора</a>
+        {% endif %}
+    </div>
+</header>
+
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <p style="color: #dc2626;"><strong>{{ message }}</strong></p>
+        {% endfor %}
+    {% endif %}
+
+    {% block content %}{% endblock %}
+</div>
+</body>
+</html>

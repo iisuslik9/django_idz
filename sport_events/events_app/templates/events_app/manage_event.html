@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Управление мероприятием: {{ event.title }}</h2>
+<p><strong>Дата:</strong> {{ event.date|date:"d.m.Y H:i" }} | <strong>Место:</strong> {{ event.location }}</p>
+
+<h3>Зарегистрированные участники</h3>
+<table>
+    <tr>
+        <th>Участник</th>
+        <th>Город</th>
+        <th>Статус</th>
+        <th>Результат (Место / Время / Баллы)</th>
+        <th>Действия</th>
+    </tr>
+    {% for reg in registrations %}
+    <tr>
+        <td>{{ reg.participant.full_name }}</td>
+        <td>{{ reg.participant.city|default:"—" }}</td>
+        <td>{{ reg.get_status_display }}</td>
+        <td>
+            {% if reg.result %}
+                Место: {{ reg.result.place|default:"—" }}, Время: {{ reg.result.finish_time|default:"—" }}, Баллы: {{ reg.result.score|default:"—" }}
+            {% else %}
+                Не выставлен
+            {% endif %}
+        </td>
+        <td>
+            <a href="{% url 'add_or_edit_result' reg.id %}" class="btn">Результат</a>
+            {% if reg.status == 'confirmed' %}
+                <a href="{% url 'cancel_registration' reg.id %}" class="btn btn-danger">Отменить</a>
+            {% endif %}
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Пока никто не зарегистрировался.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

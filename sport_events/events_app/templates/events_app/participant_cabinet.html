@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Кабинет участника</h2>
+
+<h3>Текущие и предстоящие мероприятия</h3>
+{% for reg in upcoming_registrations %}
+    <div class="card">
+        <h4><a href="{% url 'event_detail' reg.event.id %}">{{ reg.event.title }}</a></h4>
+        <p><strong>Дата:</strong> {{ reg.event.date|date:"d.m.Y H:i" }} | <strong>Статус:</strong> {{ reg.get_status_display }}</p>
+        {% if reg.status == 'confirmed' %}
+            <a href="{% url 'cancel_registration' reg.id %}" class="btn btn-danger">Отменить участие</a>
+        {% endif %}
+    </div>
+{% empty %}
+    <p>Нет предстоящих мероприятий.</p>
+{% endfor %}
+
+<h3>Прошедшие мероприятия и результаты</h3>
+<table>
+    <tr>
+        <th>Мероприятие</th>
+        <th>Дата</th>
+        <th>Статус</th>
+        <th>Место</th>
+        <th>Время</th>
+        <th>Баллы</th>
+    </tr>
+    {% for reg in past_registrations %}
+    <tr>
+        <td>{{ reg.event.title }}</td>
+        <td>{{ reg.event.date|date:"d.m.Y" }}</td>
+        <td>{{ reg.get_status_display }}</td>
+        <td>{{ reg.result.place|default:"—" }}</td>
+        <td>{{ reg.result.finish_time|default:"—" }}</td>
+        <td>{{ reg.result.score|default:"—" }}</td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="6">История участий пока пуста.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

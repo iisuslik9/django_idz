@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Личный профиль</h2>
+<p><strong>Логин:</strong> {{ profile.username }}</p>
+<p><strong>Email:</strong> {{ profile.email }}</p>
+<p><strong>Роль:</strong> {{ profile.get_role_display }}</p>
+
+{% if profile.role == 'participant' and profile.participant %}
+    <p><strong>ФИО:</strong> {{ profile.participant.full_name }}</p>
+    <p><strong>Город:</strong> {{ profile.participant.city|default:"Не указан" }}</p>
+    <a href="{% url 'participant_cabinet' %}" class="btn">Перейти в кабинет участника</a>
+{% elif profile.role == 'organizer' and profile.organizer %}
+    <p><strong>Организация / ФИО:</strong> {{ profile.organizer.full_name }}</p>
+    <p><strong>Телефон:</strong> {{ profile.organizer.phone|default:"Не указан" }}</p>
+    <a href="{% url 'organizer_cabinet' %}" class="btn">Перейти в кабинет организатора</a>
+{% endif %}
+{% endblock %}

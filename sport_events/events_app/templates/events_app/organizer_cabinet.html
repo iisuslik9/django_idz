@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Кабинет организатора</h2>
+<p><a href="{% url 'create_event' %}" class="btn">+ Создать новое мероприятие</a></p>
+
+{% for event in events %}
+    <div class="card">
+        <h3>{{ event.title }}</h3>
+        <p><strong>Дата:</strong> {{ event.date|date:"d.m.Y H:i" }} | <strong>Место:</strong> {{ event.location }}</p>
+        <a href="{% url 'manage_event' event.id %}" class="btn">Управлять участниками и результатами</a>
+    </div>
+{% empty %}
+    <p>Вы еще не создали ни одного мероприятия.</p>
+{% endfor %}
+{% endblock %}

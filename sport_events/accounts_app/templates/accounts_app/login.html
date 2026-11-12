@@ -1,29 +1,9 @@
-
-{% extends "events_app/base.html" %}
-
-{% block title %}Вход в систему{% endblock %}
-
-{% block header %}Вход в систему{% endblock %}
-
+{% extends "base.html" %}
 {% block content %}
-    <form method="post">
-        {% csrf_token %}
-
-        {{ form.as_p }}
-
-        <button type="submit">Войти</button>
-    </form>
-
-    <p>
-        Нет учетной записи?
-        <a href="{% url 'register_student' %}">
-            Зарегистрироваться как студент
-        </a>
-    </p>
-
-    <p>
-        <a href="{% url 'register_teacher' %}">
-            Подать заявку как преподаватель
-        </a>
-    </p>
+<h2>Вход в систему</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Войти</button>
+</form>
 {% endblock %}

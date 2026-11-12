@@ -23,7 +23,7 @@ def register_participant(request):
 
     return render(
         request,
-        "users/register_participant.html",
+        "accounts_app/register_participant.html",
         {"form": form},
     )
 
@@ -40,7 +40,7 @@ def register_organizer(request):
 
     return render(
         request,
-        "users/register_organizer.html",
+        "accounts_app/register_organizer.html",
         {"form": form},
     )
 
@@ -48,12 +48,12 @@ def register_organizer(request):
 def organizer_pending(request):
     return render(
         request,
-        "users/organizer_pending.html",
+        "accounts_app/organizer_pending.html",
     )
 
 
 class UserLoginView(LoginView):
-    template_name = "users/login.html"
+    template_name = "accounts_app/login.html"
     redirect_authenticated_user = True
 
     def form_valid(self, form):
@@ -74,6 +74,6 @@ class UserLogoutView(LogoutView):
 def profile(request):
     return render(
         request,
-        "users/profile.html",
+        "accounts_app/profile.html",
         {"profile": request.user},
     )
