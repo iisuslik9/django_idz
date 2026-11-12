@@ -28,6 +28,12 @@ class Participant(models.Model):
 
 
 class Event(models.Model):
+    class EventType(models.TextChoices):
+        MARATHON = "marathon", "Марафон / Забег"
+        TOURNAMENT = "tournament", "Турнир"
+        COMPETITION = "competition", "Соревнование"
+        OTHER = "other", "Другое"
+
     organizer = models.ForeignKey(
         Organizer,
         on_delete=models.CASCADE,
@@ -35,6 +41,12 @@ class Event(models.Model):
         verbose_name="Организатор",
     )
     title = models.CharField(max_length=200, verbose_name="Название мероприятия")
+    event_type = models.CharField(
+        max_length=20,
+        choices=EventType.choices,
+        default=EventType.COMPETITION,
+        verbose_name="Тип мероприятия",
+    )
     description = models.TextField(verbose_name="Описание")
     date = models.DateTimeField(verbose_name="Дата и время проведения")
     location = models.CharField(max_length=255, verbose_name="Место проведения")
@@ -117,3 +129,21 @@ class EventResult(models.Model):
 
 
 
+class Feedback(models.Model):
+    event = models.ForeignKey(
+        Event,
+        on_delete=models.CASCADE,
+        related_name="feedbacks",
+        verbose_name="Мероприятие",
+    )
+    author_name = models.CharField(max_length=150, verbose_name="Ваше имя")
+    email = models.EmailField(verbose_name="Email")
+    message = models.TextField(verbose_name="Текст отзыва")
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Дата отправки")
+
+    def __str__(self):
+        return f"Отзыв от {self.author_name} на «{self.event.title}»"
+
+    class Meta:
+        verbose_name = "Отзыв"
+        verbose_name_plural = "Отзывы"
